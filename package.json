@@ -3,37 +3,38 @@
   "version": "0.1.0",
   "description": "A date range picker",
   "author": "Owumaro",
-  "main": "dist/vue-date-range-picker.js",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib --name vue-date-range-picker src/components/DateRangePicker.vue",
     "lint": "vue-cli-service lint"
   },
+  "main": "dist/vue-date-range-picker.js",
   "dependencies": {
-    "moment": "^2.23.0"
+    "core-js": "^3.6.5",
+    "moment": "^2.23.0",
+    "vue": "^3.1.0"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.17",
     "@fortawesome/free-solid-svg-icons": "^5.8.1",
     "@fortawesome/vue-fontawesome": "^0.1.6",
-    "@vue/cli-plugin-babel": "^3.5.0",
-    "@vue/cli-plugin-eslint": "^3.5.0",
-    "@vue/cli-service": "^3.5.0",
-    "@vue/eslint-config-standard": "^4.0.0",
-    "babel-eslint": "^10.0.1",
+    "@vue/cli-plugin-babel": "^4.5.15",
+    "@vue/cli-plugin-eslint": "^4.5.15",
+    "@vue/cli-service": "^4.5.15",
+    "@vue/compat": "^3.1.0",
+    "@vue/compiler-sfc": "^3.1.0",
+    "@vue/eslint-config-standard": "^5.1.2",
+    "babel-eslint": "^10.1.0",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.15",
-    "eslint": "^5.8.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "jquery": "^3.3.1",
-    "vue": "^2.6.10",
-    "vue-template-compiler": "^2.6.10"
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^6.2.2",
+    "jquery": "^3.3.1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Owumaro/vue-date-range-picker.git"
-  },
-  "license": "MIT",
   "eslintConfig": {
     "root": true,
     "env": {
@@ -62,5 +63,10 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Owumaro/vue-date-range-picker.git"
+  }
 }

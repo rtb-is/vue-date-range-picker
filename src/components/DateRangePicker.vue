@@ -1,40 +1,20 @@
 <template>
   <div class="d-flex daterangepicker-row">
-    <!-- Calendars -->
-    <div class="daterangepicker-col" v-for="calendarIndex in calendarCount" :key="calendarIndex">
-      <date-range-picker-calendar
-        :calendarIndex="calendarIndex"
-        :calendarCount="calendarCount"
-        :month="month"
-        :startDate="startDate"
-        :endDate="endDate"
-        :compare="compare"
-        :startDateCompare="startDateCompare"
-        :endDateCompare="endDateCompare"
-        :step="step"
-        v-on:goToPrevMonth="goToPrevMonth"
-        v-on:goToNextMonth="goToNextMonth"
-        v-on:selectDate="selectDate"
-        v-on:nextStep="nextStep"
-      />
-    </div>
-
     <!-- Right form -->
-    <div class="daterangepicker-col">
+    <div class="daterangepicker-col control-panel">
       <div class="form-group">
         <select class="custom-select" :class="compare ? 'daterangepicker-range-border' : ''" v-model="rangeSelect">
           <option v-for="(range, rangeKey) in ranges" :key="rangeKey" :value="rangeKey">{{ range.label }}</option>
           <option value="custom">Custom range</option>
         </select>
       </div>
-      <div class="form-group form-inline flex-nowrap">
+      <div class="form-group form-inline flex-nowrap data-od-do">
         <input type="text" class="form-control w-100 daterangepicker-date-input"
           ref="startDate"
           :value="startDate | dateFormat"
           @focus="step = 'selectStartDate'" @blur="inputDate"
         >
         <span class="mx-2">
-        <font-awesome-icon icon="caret-right" fixed-width />
         </span>
         <input type="text" class="form-control w-100 daterangepicker-date-input"
           ref="endDate"
@@ -63,7 +43,6 @@
             @keyup.enter="inputDate"
           >
           <span class="mx-2">
-          <font-awesome-icon icon="caret-right" fixed-width />
           </span>
           <input type="text" class="form-control w-100 daterangepicker-date-input compare"
             ref="endDateCompare"
@@ -74,9 +53,27 @@
         </div>
       </div>
       <div class="form-group form-inline justify-content-end mb-0">
-        <button type="button" class="btn btn-light" @click="cancel">Cancel</button>
-        <button type="button" class="btn btn-primary ml-2" :disabled="step != null" @click="submit">Submit</button>
+        <button type="button" class="btn btn-light btn-sm button-cancel" @click="cancel">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm ml-2 button-submit" :disabled="step != null" @click="submit">Submit</button>
       </div>
+    </div>
+    <!-- Calendars -->
+    <div class="daterangepicker-col calendars" v-for="calendarIndex in calendarCount" :key="calendarIndex">
+      <date-range-picker-calendar
+        :calendarIndex="calendarIndex"
+        :calendarCount="calendarCount"
+        :month="month"
+        :startDate="startDate"
+        :endDate="endDate"
+        :compare="compare"
+        :startDateCompare="startDateCompare"
+        :endDateCompare="endDateCompare"
+        :step="step"
+        v-on:goToPrevMonth="goToPrevMonth"
+        v-on:goToNextMonth="goToNextMonth"
+        v-on:selectDate="selectDate"
+        v-on:nextStep="nextStep"
+      />
     </div>
   </div>
 </template>
@@ -85,7 +82,6 @@
 import moment from 'moment'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCaretRight } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import DateRangePickerCalendar from './DateRangePickerCalendar'
 
 library.add(faCaretRight)
@@ -113,6 +109,26 @@ export default {
             label: 'Last month',
             startDate: moment.utc().subtract(1, 'month').startOf('month'),
             endDate: moment.utc().subtract(1, 'month').endOf('month').startOf('day')
+          },
+          currentWeek: {
+            label: 'Current week',
+            startDate: moment.utc().startOf('week').add(1, 'day'),
+            endDate: moment.utc().endOf('week').add(1, 'day').startOf('day')
+          },
+          lastWeek: {
+            label: 'Last week',
+            startDate: moment.utc().subtract(1, 'week').startOf('week').add(1, 'day'),
+            endDate: moment.utc().subtract(1, 'week').endOf('week').add(1, 'day').startOf('day')
+          },
+          today: {
+            label: 'Today',
+            startDate: moment.utc(),
+            endDate: moment.utc()
+          },
+          yesterday: {
+            label: 'Yesterday',
+            startDate: moment.utc().subtract(1, 'day'),
+            endDate: moment.utc().subtract(1, 'day')
           }
         }
       }
@@ -136,7 +152,16 @@ export default {
       rangeSelectCompare: null,
       compare: false,
       month: moment.utc().subtract(1, 'month').startOf('month'),
-      step: null
+      step: null,
+      rangesDefaultCompareMap: {
+        currentMonth: 'currentMonth',
+        lastMonth: 'lastMonth',
+        currentWeek: 'lastWeek',
+        lastWeek: 'lastWeek',
+        custom: 'custom',
+        today: 'yesterday',
+        yesterday: 'yesterday'
+      }
     }
   },
   computed: {
@@ -181,6 +206,7 @@ export default {
         this.step = 'selectStartDate'
         this.$refs.startDate.focus()
       }
+      this.rangeSelectCompare = this.rangesDefaultCompareMap[rangeKey]
     },
     selectRangeCompare: function(rangeKey) {
       let predefinedRange = false
@@ -235,7 +261,7 @@ export default {
     },
     // Try to update the step date from an input value
     inputDate: function(input) {
-      let date = moment.utc(input.target.value, 'YYYY-MM-DD')
+      const date = moment.utc(input.target.value, 'YYYY-MM-DD')
       if (date.isValid()) {
         this.selectDate(date)
       }
@@ -316,7 +342,7 @@ export default {
     this.rangeSelect = this.defaultRangeSelect
     this.rangeSelectCompare = this.defaultRangeSelectCompare
   },
-  components: { DateRangePickerCalendar, FontAwesomeIcon }
+  components: { DateRangePickerCalendar }
 }
 </script>
 
@@ -330,29 +356,79 @@ export default {
   padding: 0.5rem;
   flex-basis: 100%;
 }
+.daterangepicker-col.calendars {
+  border-left: 1px solid rgb(228, 231, 237);
+}
 
 /* Make sure that the full date (YYYY-MM-DD) is displayed */
 .daterangepicker-date-input {
   min-width: 120px;
+  font-family: Inter, Roboto, Oxygen, "Fira Sans", "Helvetica Neue", sans-serif !important;
 }
 
 /* Select menus border */
 .daterangepicker-range-border {
-  border-color: #17a2b8 !important;
+  border-color: blue !important;
 }
 
 .daterangepicker-range-border.compare {
-  border-color: #ff9307 !important;
+  border-color: red !important;
+  font-family: Inter, Roboto, Oxygen, "Fira Sans", "Helvetica Neue", sans-serif !important;
 }
 
 /* Date input focus */
 .daterangepicker-date-input:focus {
-  border-color: #17a2b8 !important;
-  box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25) !important;
+  border-color: blue !important;
+  box-shadow: 0 0 0 0.2rem !important;
+  font-family: Inter, Roboto, Oxygen, "Fira Sans", "Helvetica Neue", sans-serif !important;
 }
 
 .daterangepicker-date-input.compare:focus {
-  border-color: #ff9307 !important;
+  border-color: red !important;
   box-shadow: 0 0 0 0.2rem rgba(255, 147, 7, 0.25) !important;
+  font-family: Inter, Roboto, Oxygen, "Fira Sans", "Helvetica Neue", sans-serif !important;
 }
+
+.daterangepicker-date-input {
+  font-size: 12px !important;
+  font-family: Inter, Roboto, Oxygen, "Fira Sans", "Helvetica Neue", sans-serif !important;
+}
+
+.button-cancel {
+  background-color: #fff !important;
+  border: 1px solid rgb(220,223,230) !important;
+  color: rgb(96, 98, 102) !important;
+  font-family: Inter, Roboto, Oxygen, "Fira Sans", "Helvetica Neue", sans-serif !important;
+}
+
+.button-cancel:hover {
+  background-color: rgb(236,245,255) !important;
+  border: 1px solid #409eff !important;
+  color: #409eff !important;
+  font-family: Inter, Roboto, Oxygen, "Fira Sans", "Helvetica Neue", sans-serif !important;
+}
+
+.button-submit {
+  background-color: #409eff !important;
+  border: 1px solid #409eff !important;
+  font-family: Inter, Roboto, Oxygen, "Fira Sans", "Helvetica Neue", sans-serif !important;
+}
+
+.button-submit:hover {
+  background-color: #409eff !important;
+  font-family: Inter, Roboto, Oxygen, "Fira Sans", "Helvetica Neue", sans-serif !important;
+}
+.custom-control-label {
+  /* font-size: 12px !important; */
+}
+.custom-checkbox {
+  font-family: Inter, Roboto, Oxygen, "Fira Sans", "Helvetica Neue", sans-serif !important;
+}
+.custom-select {
+  font-size: 12px !important;
+  font-weight: bold !important;
+  color: rgb(96, 98, 102) !important;
+  font-family: Inter, Roboto, Oxygen, "Fira Sans", "Helvetica Neue", sans-serif !important;
+}
+
 </style>
